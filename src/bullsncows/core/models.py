@@ -173,5 +173,10 @@ class Client(ABC):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self) -> str:
+        pass
+
+    @name.setter
+    @abstractmethod
+    def name(self, value: str):
         pass

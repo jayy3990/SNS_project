@@ -82,8 +82,8 @@ class BeginGamePacket(Packet, pid=1, pformat='<IIfI'):
 
 
 @dataclass
-class EndGamePacket(Packet, pid=3, pformat='<I16p4I'):
-    total_round: int
+class EndGamePacket(Packet, pid=2, pformat='<I16p4I'):
+    total_rounds: int
     winner: str
     answer_1: int
     answer_2: int
@@ -92,17 +92,17 @@ class EndGamePacket(Packet, pid=3, pformat='<I16p4I'):
 
 
 @dataclass
-class BeginRoundPacket(Packet, pid=2, pformat="<I"):
+class BeginRoundPacket(Packet, pid=3, pformat="<I"):
     round: int
 
 
 @dataclass
-class EndRoundPacket(Packet, pid=3, pformat='<I'):
+class EndRoundPacket(Packet, pid=4, pformat='<I'):
     round: int
 
 
 @dataclass
-class ChoiceResultPacket(Packet, pid=4, pformat='<16p4IHH'):
+class ChoiceResultPacket(Packet, pid=5, pformat='<16p4IHH'):
     user: str
     choice_1: int
     choice_2: int
