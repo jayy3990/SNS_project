@@ -65,11 +65,19 @@ class Server(ABC):
         pass
 
     @abstractmethod
-    def answer_guess(self, player, choices):
+    def guess(self, player, choices):
+        """
+        Player gives a guess to the server
+        :param player: Client
+        :param choice: 4-sized tuple
+        :return: None
+        """
+
+    @abstractmethod
+    def answer_guess(self, player):
         """
         Replies to the guess.
         :param player: Client
-        :param choices: 4-sized tuple
         :return: None
         """
         pass

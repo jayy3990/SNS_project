@@ -96,13 +96,10 @@ class BeginRoundPacket(Packet, pid=3, pformat="<I"):
     round: int
 
 
-@dataclass
-class EndRoundPacket(Packet, pid=4, pformat='<I'):
-    round: int
 
 
 @dataclass
-class ChoiceResultPacket(Packet, pid=5, pformat='<16p4IHH'):
+class ChoiceResultPacket(Packet, pid=4, pformat='<16p4IHH'):
     user: str
     choice_1: int
     choice_2: int

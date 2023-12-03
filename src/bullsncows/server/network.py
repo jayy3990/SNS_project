@@ -5,7 +5,7 @@ from queue import Queue
 
 from src.bullsncows.core.packets import AuthRequestPacket, AuthResponsePacket, Packet, ChoicePacket, BeginGamePacket, \
     BeginRoundPacket, EndRoundPacket, ChoiceResultPacket
-from src.bullsncows.server.bncserver import VirtualClient, BNCServer
+from src.bullsncows.server.bncserver import FakeClient, BNCServer
 
 
 
