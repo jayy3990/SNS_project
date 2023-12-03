@@ -1,0 +1,52 @@
+
+import socket, time, random
+
+def main():
+    HOST = ''
+    PORT = 5555
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((HOST, PORT))
+
+    server_socket.listen()
+    print('클라이언트 접속 중')
+
+    client_soc, addr = server_socket.accept()
+    print('클라이언트 접속 완료, ', addr)
+
+    baseball = []
+    digit = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(4):
+        rnd = random.choice(digit)
+        baseball.append(rnd)
+        digit.remove(rnd)
+
+    while True:
+        print(baseball)
+        data = client_soc.recv(100)
+        msg = data.decode()
+        if msg == '/end':
+            break
+        print('입력된 숫자:', msg)
+        ball = 0
+        strike = 0
+        out = 0
+        for i in range(4):
+            if int(msg[i]) == baseball[i]:
+                strike +=1
+            elif int(msg[i]) in baseball:
+                ball +=1
+            else:
+                out +=1
+
+        resolve = str(strike) + ' ' + str(ball) + ' ' + str(out)
+        print(resolve)
+        client_soc.sendall(resolve.encode(encoding='utf-8'))
+
+
+    time.sleep(5)
+    print("Server End")
+    server_socket.close()
+
+main()
