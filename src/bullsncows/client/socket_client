@@ -1,0 +1,38 @@
+import socket
+
+server_ip = 'localhost'
+server_port = 5555
+
+print("서버 접속 중")
+socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socket.connect((server_ip, server_port))
+print("서버 접속 완료")
+cnt = 0
+while True:
+    print("10회 이내에 숫자 4개를 맞추세요")
+    msg = input('숫자 4개를 입력하세요: ')
+    cnt +=1
+    while len(msg) != 4:
+        msg = input('다시 입력하세요: ')
+    socket.sendall(msg.encode(encoding='utf-8'))
+
+    data = socket.recv(100)
+    resolve = data.decode()
+    baseball = list(resolve.split())
+    s = baseball[0]
+    b = baseball[1]
+    o = baseball[2]
+
+    if s == '4':
+        socket.sendall("/end".encode(encoding='utf-8'))
+        print("정답!")
+        break
+    if cnt == 10:
+        socket.sendall("/end".encode(encoding='utf-8'))
+        print("실패!")
+        break
+
+    print(cnt, '회 시도 중,', s+'S', b+'B', o+'O')
+
+socket.close()
+
