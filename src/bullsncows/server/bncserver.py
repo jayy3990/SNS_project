@@ -1,6 +1,7 @@
 import random
 import socketserver
 import threading
+import time
 from dataclasses import dataclass
 from enum import Enum
 from queue import Queue
@@ -43,10 +44,10 @@ class BNCServer(Server, Stateful['BNCServer.State']):
                     self.__player.guess(
                         [recv_packet.choice_1, recv_packet.choice_2, recv_packet.choice_3, recv_packet.choice_4])
 
-    class TCPServer(socketserver.TCPServer, socketserver.ThreadingMixIn):
+    class TCPServer(socketserver.ThreadingTCPServer):
         allow_reuse_address = True
 
-        def __init__(self, server_address, RequestHandlerClass, bnc_server: 'BNCServer', bind_and_activate):
+        def __init__(self, server_address, RequestHandlerClass, bnc_server: 'BNCServer', bind_and_activate = False):
             super().__init__(server_address, RequestHandlerClass, bind_and_activate=bind_and_activate)
             self.__queues: dict[tuple[str, int] | str, Queue] = {}
             self.__addresses: dict[Client, tuple[str, int] | str] = {}
@@ -102,21 +103,22 @@ class BNCServer(Server, Stateful['BNCServer.State']):
         self.__round: int = 0
 
         self.__tcp_server = BNCServer.TCPServer((self.__server_ip, self.__server_port),
-                                                BNCServer.TCPRequestHandler, self,
-                                                bind_and_activate=False)
+                                                BNCServer.TCPRequestHandler, self)
         self.__tcp_server_thread = None
         self.__timer: Optional[BNCServer.RoundTimer] = None
         self.__players: Optional[list[Client]] = None
         self.__answers: Optional[Tuple[int]] = None
         self.__choices: Optional[dict[Client, Tuple[int]]] = None
 
+
+
     @require_state({State.SETUP})
     def open(self):
-        self.__tcp_server.__enter__()
+        self.__tcp_server.server_bind()
+        self.__tcp_server.server_activate()
         self.__tcp_server_thread = threading.Thread(target=self.__tcp_server.serve_forever)
         self.__tcp_server_thread.daemon = True
         self.__tcp_server_thread.start()
-        print(self.__tcp_server_thread)
         self.__players = []
         self.__timer = BNCServer.RoundTimer(self.time_per_round, self)
         self.__state = BNCServer.State.IDLE
@@ -124,6 +126,7 @@ class BNCServer(Server, Stateful['BNCServer.State']):
     @require_state({State.IDLE})
     def close(self):
         self.__tcp_server.shutdown()
+        self.__tcp_server.server_close()
         self.__state = BNCServer.State.SETUP
 
     @require_state({State.IDLE})
@@ -307,5 +310,9 @@ if __name__ == "__main__":
 
         sock.close()
 
-
+    print(bnc_server._BNCServer__tcp_server_thread)
+    time.sleep(1)
     client(BNCServer.SERVER_IP, BNCServer.SERVER_PORT)
+
+    while True:
+        pass
